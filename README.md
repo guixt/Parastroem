@@ -1,7 +1,9 @@
 
 <p align="left">
-  <img src="logo.gif" width="250">
+  <img src="logo.gif" width="300">
+    <img src="screenshot_parastroem.png" width="680">
 </p>
+
 
 Paraström ist eine minimalistische Task-App auf Basis von React und Tailwind. Sie hilft dir, viele parallele Aufgaben im Blick zu behalten, ohne ein kompliziertes Setup zu erfordern. Alle Daten bleiben lokal in deinem Browser gespeichert, sodass du sofort loslegen kannst.
 
