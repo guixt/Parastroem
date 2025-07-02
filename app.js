@@ -277,7 +277,12 @@ function TaskItem({ task, onToggle, onDelete }) {
   const [progress, setProgress] = React.useState(0);
   const notificationShown = React.useRef(false);
 
-  const priorityIcons = { low: "🟢", medium: "🟡", high: "🔴" };
+  // Mapping der Priorität auf Tailwind-Farben für den Punkt oben links
+  const priorityColors = {
+    low: "bg-green-500",
+    medium: "bg-yellow-500",
+    high: "bg-red-500",
+  };
   React.useEffect(() => {
     const update = () => {
       if (task.done) {
@@ -300,28 +305,46 @@ function TaskItem({ task, onToggle, onDelete }) {
 
 
   return (
-    <div className={`border p-2 bg-white rounded shadow transition-opacity duration-300 ${task.done ? 'opacity-60' : ''}`}> 
-      <div className="flex justify-between items-start mb-1">
-        <div>
-          <h3 className="font-bold flex items-center">
-            {task.title} <span class="ml-1">{priorityIcons[task.priority]}</span>
-            {task.category && (
-              <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200">{task.category}</span>
-            )}
-      </h3>
+    <div
+      className={`relative border p-4 bg-white rounded shadow transition-opacity duration-300 flex flex-col h-52 ${task.done ? 'opacity-60' : ''}`}
+    >
+      {/* Prioritätspunkt und Kategorie links oben */}
+      <div className="flex items-center space-x-2">
+        <span className={`w-3 h-3 rounded-full ${priorityColors[task.priority]}`}></span>
+        {task.category && (
+          <span className="px-2 py-0.5 text-xs rounded-full bg-gray-200">
+            {task.category}
+          </span>
+        )}
+      </div>
+
+      {/* Action-Buttons fest oben rechts positioniert */}
+      <div className="absolute top-2 right-2 space-x-2">
+        <button
+          onClick={() => onToggle(task.id)}
+          className="text-sm text-teal-600 hover:underline"
+        >
+          {task.done ? 'Rückgängig' : 'Erledigt'}
+        </button>
+        <button
+          onClick={() => onDelete(task.id)}
+          className="text-sm text-red-600 hover:underline"
+        >
+          Löschen
+        </button>
+      </div>
+
+      {/* Titel und optionale Notizen werden gekürzt */}
+      <h3 className="font-bold mt-2 line-clamp-1">{task.title}</h3>
+      {task.notes && (
+        <p className="text-sm text-gray-700 mt-1 line-clamp-2">{task.notes}</p>
+      )}
+
+      {/* Fortschrittsbalken immer am unteren Rand */}
+      <div className="mt-auto">
+        <ParticleProgress progress={progress} />
+      </div>
     </div>
-    <div className="space-x-2">
-      <button onClick={() => onToggle(task.id)} className="text-sm text-teal-600 hover:underline">
-        {task.done ? 'Rückgängig' : 'Erledigt'}
-      </button>
-      <button onClick={() => onDelete(task.id)} className="text-sm text-red-600 hover:underline">Löschen</button>
-    </div>
-  </div>
-  {task.notes && (
-    <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
-  )}
-  <ParticleProgress progress={progress} />
-</div>
   );
 }
 
