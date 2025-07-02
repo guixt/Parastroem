@@ -74,10 +74,10 @@ function FlowProgress({ progress, id }) {
       <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full">
         <defs>
           <linearGradient id={`flow-gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset={`${gradOffset}%`} stopColor="#06b6d4" />
-            <stop offset={`${gradOffset}%`} stopColor="#f97316" />
-            <stop offset="100%" stopColor="#f97316" />
+            <stop offset="0%" stopColor="#3b82f6" />
+            <stop offset={`${gradOffset}%`} stopColor="#3b82f6" />
+            <stop offset={`${gradOffset}%`} stopColor="#10b981" />
+            <stop offset="100%" stopColor="#10b981" />
           </linearGradient>
           <filter id={`glow-${id}`} x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
@@ -105,20 +105,33 @@ function FlowProgress({ progress, id }) {
   );
 }
 
-function ParticleProgress({ progress }) {
+function ParticleProgress({ progress, priority }) {
   const canvasRef = React.useRef(null);
   const particlesRef = React.useRef([]);
   const progressRef = React.useRef(progress);
   const animationRef = React.useRef();
+  const priorityRef = React.useRef(priority);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
   React.useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  React.useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const colors = ['#06b6d4', '#f97316', '#10b981', '#a855f7'];
+    const colorMap = {
+      low: ['#93c5fd', '#6ee7b7'],
+      medium: ['#3b82f6', '#10b981'],
+      high: ['#1e40af', '#064e3b'],
+    };
+    let colors = colorMap[priorityRef.current] || colorMap.low;
+    const baseSpeed = 0.25;
+    const speedMap = { low: 1, medium: 1.5, high: 2 };
+    let speed = baseSpeed * (speedMap[priorityRef.current] || 1);
 
     const resize = () => {
       canvas.width = canvas.clientWidth;
@@ -133,37 +146,42 @@ function ParticleProgress({ progress }) {
       const r = 1 + Math.random() * 2;
       const x = Math.random() * width;
       const y = canvas.height + r;
-      const vy = -0.5 - Math.random() * 0.5;
+      const vy = (-0.5 - Math.random() * 0.5) * speed;
       const color = colors[Math.floor(Math.random() * colors.length)];
       particlesRef.current.push({ x, y, r, vy, color, alpha: 1 });
     };
 
     const draw = () => {
+      colors = colorMap[priorityRef.current] || colorMap.low;
+      speed = baseSpeed * (speedMap[priorityRef.current] || 1);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const width = canvas.width * progressRef.current;
       if (width > 0) {
         const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        grad.addColorStop(0, '#06b6d4');
-        grad.addColorStop(1, '#f97316');
+        grad.addColorStop(0, colors[0]);
+        grad.addColorStop(1, colors[1]);
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, canvas.height);
       }
 
-      for (let i = 0; i < 3; i++) spawnParticle();
-      const next = [];
-      particlesRef.current.forEach(p => {
-        p.y += p.vy;
-        p.alpha -= 0.01;
-        if (p.alpha > 0 && p.y > -p.r) next.push(p);
-        ctx.globalAlpha = Math.max(p.alpha, 0);
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      ctx.globalAlpha = 1;
-      particlesRef.current = next;
-      animationRef.current = requestAnimationFrame(draw);
+      if (progressRef.current < 1) {
+        for (let i = 0; i < 3; i++) spawnParticle();
+        const next = [];
+        particlesRef.current.forEach(p => {
+          p.y += p.vy;
+          p.alpha -= 0.01 * speed;
+          if (p.alpha > 0 && p.y > -p.r) next.push(p);
+          ctx.globalAlpha = Math.max(p.alpha, 0);
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        particlesRef.current = next;
+        animationRef.current = requestAnimationFrame(draw);
+      }
     };
 
     draw();
@@ -286,7 +304,7 @@ function TaskItem({ task, onToggle, onDelete }) {
   {task.notes && (
     <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
   )}
-  <ParticleProgress progress={progress} />
+  <ParticleProgress progress={progress} priority={task.priority} />
 </div>
   );
 }
