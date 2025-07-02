@@ -9,6 +9,12 @@ function loadTasks() {
   return data ? JSON.parse(data) : [];
 }
 
+function showNotification(title) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Task fertig', { body: title });
+  }
+}
+
 function exportTasks(tasks) {
   const dataStr = JSON.stringify(tasks, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
@@ -96,6 +102,7 @@ function TaskForm({ onAdd }) {
 
 function TaskItem({ task, onToggle, onDelete }) {
   const [progress, setProgress] = React.useState(0);
+  const notificationShown = React.useRef(false);
 
   React.useEffect(() => {
     const update = () => {
@@ -106,6 +113,10 @@ function TaskItem({ task, onToggle, onDelete }) {
       const now = Date.now();
       const p = Math.min((now - task.startTime) / task.durationMs, 1);
       setProgress(p);
+      if (p >= 1 && !notificationShown.current) {
+        showNotification(task.title);
+        notificationShown.current = true;
+      }
     };
     update();
     const id = setInterval(update, 1000);
@@ -142,6 +153,12 @@ function App() {
     saveTasks(tasks);
   }, [tasks]);
 
+  React.useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
   const addTask = task => setTasks([...tasks, task]);
 
   const toggleTask = id => {
@@ -168,7 +185,7 @@ function App() {
       </div>
       {/* Roadmap:
         - Screenshots/Dokumente anhängen
-        - Web Notifications
+        - Web Notifications (implementiert)
         - Filter/Sortierung
         - Cloud-Sync (z.B. Firebase)
         - Dark Mode / Themes
