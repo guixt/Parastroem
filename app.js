@@ -94,7 +94,7 @@ function TaskForm({ onAdd }) {
   );
 }
 
-function TaskItem({ task, onToggle }) {
+function TaskItem({ task, onToggle, onDelete }) {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
@@ -115,17 +115,20 @@ function TaskItem({ task, onToggle }) {
   const barColor = task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500';
 
   return (
-    <div className="border p-2 mb-2 bg-white">
-      <div className="flex justify-between">
+    <div className="border p-2 bg-white rounded shadow">
+      <div className="flex justify-between items-start mb-1">
         <div>
           <h3 className="font-bold">{task.title}</h3>
           <p className="text-sm text-gray-600">{task.category}</p>
         </div>
-        <button onClick={() => onToggle(task.id)} className="text-sm text-blue-600">
-          {task.done ? 'Rückgängig' : 'Erledigt'}
-        </button>
+        <div className="space-x-2">
+          <button onClick={() => onToggle(task.id)} className="text-sm text-blue-600">
+            {task.done ? 'Rückgängig' : 'Erledigt'}
+          </button>
+          <button onClick={() => onDelete(task.id)} className="text-sm text-red-600">Löschen</button>
+        </div>
       </div>
-      <div className="h-2 bg-gray-200 mt-2">
+      <div className="h-2 bg-gray-200">
         <div className={`${barColor} h-full`} style={{ width: `${progress * 100}%`, transition: 'width 1s linear' }}></div>
       </div>
     </div>
@@ -145,17 +148,24 @@ function App() {
     setTasks(tasks.map(t => (t.id === id ? { ...t, done: !t.done } : t)));
   };
 
+  const deleteTask = id => {
+    setTasks(tasks.filter(t => t.id !== id));
+  };
+
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Paraström</h1>
+      <img src="logo.png" alt="Paraström" className="w-24 mx-auto mb-2" />
+      <h1 className="text-2xl font-bold mb-4 text-center">Paraström</h1>
       <TaskForm onAdd={addTask} />
       <div className="flex space-x-2 mb-4">
         <button onClick={() => exportTasks(tasks)} className="bg-gray-500 text-white px-2 py-1">Export</button>
         <button onClick={() => importTasks(setTasks)} className="bg-gray-500 text-white px-2 py-1">Import</button>
       </div>
-      {tasks.map(task => (
-        <TaskItem key={task.id} task={task} onToggle={toggleTask} />
-      ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {tasks.map(task => (
+          <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
+        ))}
+      </div>
       {/* Roadmap:
         - Screenshots/Dokumente anhängen
         - Web Notifications
