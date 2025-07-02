@@ -17,13 +17,24 @@ Paraström richtet sich an Nutzerinnen und Nutzer, die mehrere kleine Aufgaben g
 
 ## Roadmap
 
-### Phase 1 – Minimal Viable Product (MVP)
+
+### Aktuelle Features
+- Task-Eingabe mit Titel, Kategorie, Priorität, geplanter Dauer und optionalen Notizen
+- Speicherung im Browser (LocalStorage / IndexedDB)
+- Darstellung aller Tasks als Karten mit animiertem Fortschrittsbalken
+- Erledigen oder Löschen einzelner Tasks
+- JSON-Export und Import der Taskliste
+- Desktop-Benachrichtigungen bei abgeschlossenem Task
+- Anzeige hinterlegter Notizen zu jedem Task
+
+### Phase 1 - Minimal Viable Product (MVP)
 Bereits umgesetzt oder in Arbeit:
 - Task-Eingabe mit Titel, Kategorie, Priorität, Dauer, Notizen
 - Speicherung lokal (LocalStorage / IndexedDB)
 - JSON-Export / Import
 - Flow-Animation (Basis)
 - Erledigt / Löschen von Tasks
+
 
 *Technische Basis*: React + Tailwind, einfache Komponentenstruktur, komplett ohne Backend.
 
