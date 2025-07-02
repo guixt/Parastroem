@@ -1,5 +1,30 @@
 const STORAGE_KEY = 'parastrom_tasks';
 
+function formatTimestamp(date) {
+  const pad = n => n.toString().padStart(2, '0');
+  return (
+    date.getFullYear().toString() +
+    pad(date.getMonth() + 1) +
+    pad(date.getDate()) +
+    pad(date.getHours()) +
+    pad(date.getMinutes()) +
+    pad(date.getSeconds())
+  );
+}
+
+function parseTimestamp(value) {
+  if (typeof value === 'number') return value;
+  const str = String(value);
+  if (str.length !== 14) return Date.parse(str);
+  const year = parseInt(str.slice(0, 4), 10);
+  const month = parseInt(str.slice(4, 6), 10) - 1;
+  const day = parseInt(str.slice(6, 8), 10);
+  const hour = parseInt(str.slice(8, 10), 10);
+  const min = parseInt(str.slice(10, 12), 10);
+  const sec = parseInt(str.slice(12, 14), 10);
+  return new Date(year, month, day, hour, min, sec).getTime();
+}
+
 function saveTasks(tasks) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
@@ -198,12 +223,13 @@ function TaskForm({ onAdd }) {
   const handleSubmit = e => {
     e.preventDefault();
     const multiplier = { minutes: 60000, hours: 3600000, days: 86400000 }[unit];
+    const timestamp = formatTimestamp(new Date());
     const task = {
-      id: Date.now(),
+      id: timestamp,
       title,
       category,
       priority,
-      startTime: Date.now(),
+      startTime: timestamp,
       durationMs: duration * multiplier,
       notes,
       done: false,
@@ -259,7 +285,8 @@ function TaskItem({ task, onToggle, onDelete }) {
         return;
       }
       const now = Date.now();
-      const p = Math.min((now - task.startTime) / task.durationMs, 1);
+      const start = parseTimestamp(task.startTime);
+      const p = Math.min((now - start) / task.durationMs, 1);
       setProgress(p);
       if (p >= 1 && !notificationShown.current) {
         showNotification(task.title);

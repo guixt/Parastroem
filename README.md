@@ -95,3 +95,21 @@ Um möglichst schnell ein rundes Produkt zu erhalten, können Phase 2 und 3 komb
 
 ## Starten
 Öffne einfach die Datei `index.html` im Browser. React und Tailwind werden per CDN geladen, ein separater Build-Schritt ist nicht erforderlich.
+
+### JSON-Format
+Beim Export entsteht eine Datei mit allen Tasks. Ein Eintrag sieht zum Beispiel so aus:
+
+```json
+{
+  "id": "20230101123000",
+  "title": "Lichttraverse montieren",
+  "category": "Lichttechnik",
+  "priority": "medium",
+  "startTime": "20230101123000",
+  "durationMs": 2700000,
+  "notes": "Hängung mit Sicherheitsseilen sichern.",
+  "done": false
+}
+```
+
+`startTime` nutzt das Format `YYYYMMDDHHMMSS`. Daraus berechnet die App zusammen mit `durationMs` den Fortschritt.
