@@ -105,33 +105,23 @@ function FlowProgress({ progress, id }) {
   );
 }
 
-function ParticleProgress({ progress, priority }) {
+function ParticleProgress({ progress }) {
   const canvasRef = React.useRef(null);
   const particlesRef = React.useRef([]);
   const progressRef = React.useRef(progress);
   const animationRef = React.useRef();
-  const priorityRef = React.useRef(priority);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  React.useEffect(() => {
-    priorityRef.current = priority;
-  }, [priority]);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const colorMap = {
-      low: ['#93c5fd', '#6ee7b7'],
-      medium: ['#3b82f6', '#10b981'],
-      high: ['#1e40af', '#064e3b'],
-    };
-    let colors = colorMap[priorityRef.current] || colorMap.low;
+    const colors = ["#93c5fd", "#6ee7b7"];
     const baseSpeed = 0.25;
-    const speedMap = { low: 1, medium: 1.5, high: 2 };
-    let speed = baseSpeed * (speedMap[priorityRef.current] || 1);
+    let speed = baseSpeed;
 
     const resize = () => {
       canvas.width = canvas.clientWidth;
@@ -152,8 +142,6 @@ function ParticleProgress({ progress, priority }) {
     };
 
     const draw = () => {
-      colors = colorMap[priorityRef.current] || colorMap.low;
-      speed = baseSpeed * (speedMap[priorityRef.current] || 1);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const width = canvas.width * progressRef.current;
@@ -263,6 +251,7 @@ function TaskItem({ task, onToggle, onDelete }) {
   const [progress, setProgress] = React.useState(0);
   const notificationShown = React.useRef(false);
 
+  const priorityIcons = { low: "🟢", medium: "🟡", high: "🔴" };
   React.useEffect(() => {
     const update = () => {
       if (task.done) {
@@ -288,7 +277,7 @@ function TaskItem({ task, onToggle, onDelete }) {
       <div className="flex justify-between items-start mb-1">
         <div>
           <h3 className="font-bold flex items-center">
-            {task.title}
+            {task.title} <span class="ml-1">{priorityIcons[task.priority]}</span>
             {task.category && (
               <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200">{task.category}</span>
             )}
@@ -304,7 +293,7 @@ function TaskItem({ task, onToggle, onDelete }) {
   {task.notes && (
     <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
   )}
-  <ParticleProgress progress={progress} priority={task.priority} />
+  <ParticleProgress progress={progress} />
 </div>
   );
 }
