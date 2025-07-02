@@ -47,6 +47,60 @@ function importTasks(setTasks) {
   input.click();
 }
 
+function FlowProgress({ progress, id }) {
+  const pathRef = React.useRef(null);
+  const [length, setLength] = React.useState(0);
+  const [pos, setPos] = React.useState({ x: 0, y: 0 });
+
+  React.useEffect(() => {
+    if (pathRef.current) {
+      const l = pathRef.current.getTotalLength();
+      setLength(l);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (pathRef.current && length) {
+      const point = pathRef.current.getPointAtLength(length * progress);
+      setPos({ x: point.x, y: point.y });
+    }
+  }, [progress, length]);
+
+  const offset = length - length * progress;
+
+  return (
+    <div className="w-full h-6 bg-gray-800 rounded overflow-hidden">
+      <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full">
+        <defs>
+          <linearGradient id={`flow-gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#06b6d4" />
+            <stop offset="100%" stopColor="#f97316" />
+          </linearGradient>
+          <filter id={`glow-${id}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path
+          ref={pathRef}
+          d="M0 10 C 20 0 40 0 50 10 C 60 20 80 20 100 10"
+          fill="none"
+          stroke={`url(#flow-gradient-${id})`}
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={length}
+          strokeDashoffset={offset}
+          style={{ transition: 'stroke-dashoffset 1s linear' }}
+        />
+        <circle cx={pos.x} cy={pos.y} r="2" fill={`url(#flow-gradient-${id})`} filter={`url(#glow-${id})`} />
+      </svg>
+    </div>
+  );
+}
+
 function TaskForm({ onAdd }) {
   const [title, setTitle] = React.useState('');
   const [category, setCategory] = React.useState('');
@@ -130,12 +184,6 @@ function TaskItem({ task, onToggle, onDelete }) {
     return () => clearInterval(id);
   }, [task]);
 
-  const barGradient =
-    task.priority === 'high'
-      ? 'from-red-400 to-red-600'
-      : task.priority === 'medium'
-      ? 'from-orange-400 to-orange-600'
-      : 'from-green-400 to-green-600';
 
   return (
     <div className={`border p-2 bg-white rounded shadow transition-opacity duration-300 ${task.done ? 'opacity-60' : ''}`}> 
@@ -158,9 +206,7 @@ function TaskItem({ task, onToggle, onDelete }) {
   {task.notes && (
     <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
   )}
-  <div className="h-2 bg-gray-200 rounded">
-    <div className={`h-full bg-gradient-to-r ${barGradient}`} style={{ width: `${progress * 100}%`, transition: 'width 1s linear' }}></div>
-  </div>
+  <FlowProgress progress={progress} id={task.id} />
 </div>
   );
 }
