@@ -105,6 +105,82 @@ function FlowProgress({ progress, id }) {
   );
 }
 
+function ParticleProgress({ progress }) {
+  const canvasRef = React.useRef(null);
+  const particlesRef = React.useRef([]);
+  const progressRef = React.useRef(progress);
+  const animationRef = React.useRef();
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const colors = ['#06b6d4', '#f97316', '#10b981', '#a855f7'];
+
+    const resize = () => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const spawnParticle = () => {
+      const width = canvas.width * progressRef.current;
+      if (width <= 0) return;
+      const r = 1 + Math.random() * 2;
+      const x = Math.random() * width;
+      const y = canvas.height + r;
+      const vy = -0.5 - Math.random() * 0.5;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particlesRef.current.push({ x, y, r, vy, color, alpha: 1 });
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const width = canvas.width * progressRef.current;
+      if (width > 0) {
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        grad.addColorStop(0, '#06b6d4');
+        grad.addColorStop(1, '#f97316');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, canvas.height);
+      }
+
+      for (let i = 0; i < 3; i++) spawnParticle();
+      const next = [];
+      particlesRef.current.forEach(p => {
+        p.y += p.vy;
+        p.alpha -= 0.01;
+        if (p.alpha > 0 && p.y > -p.r) next.push(p);
+        ctx.globalAlpha = Math.max(p.alpha, 0);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      particlesRef.current = next;
+      animationRef.current = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="w-full h-6 bg-gray-200 rounded overflow-hidden">
+      <canvas ref={canvasRef} className="w-full h-full"></canvas>
+    </div>
+  );
+}
+
 function TaskForm({ onAdd }) {
   const [title, setTitle] = React.useState('');
   const [category, setCategory] = React.useState('');
@@ -210,7 +286,7 @@ function TaskItem({ task, onToggle, onDelete }) {
   {task.notes && (
     <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
   )}
-  <FlowProgress progress={progress} id={task.id} />
+  <ParticleProgress progress={progress} />
 </div>
   );
 }

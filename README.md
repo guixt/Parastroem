@@ -11,7 +11,7 @@ Paraström richtet sich an Nutzerinnen und Nutzer, die mehrere kleine Aufgaben g
 ## Aktuelle Features
 - Task-Eingabe mit Titel, Kategorie, Priorität, geplanter Dauer und optionalen Notizen
 - Speicherung im Browser (LocalStorage / IndexedDB)
-- Darstellung aller Tasks als Karten mit animiertem Fortschrittsbalken
+ - Darstellung aller Tasks als Karten mit animiertem Fortschrittsbalken und farbiger Partikelanimation
 - Erledigen oder Löschen einzelner Tasks
 - JSON-Export und Import deiner Taskliste
 - Desktop-Benachrichtigungen bei abgeschlossenem Task
@@ -22,7 +22,7 @@ Paraström richtet sich an Nutzerinnen und Nutzer, die mehrere kleine Aufgaben g
 ### Aktuelle Features
 - Task-Eingabe mit Titel, Kategorie, Priorität, geplanter Dauer und optionalen Notizen
 - Speicherung im Browser (LocalStorage / IndexedDB)
-- Darstellung aller Tasks als Karten mit animiertem Fortschrittsbalken
+ - Darstellung aller Tasks als Karten mit animiertem Fortschrittsbalken und farbiger Partikelanimation
 - Erledigen oder Löschen einzelner Tasks
 - JSON-Export und Import der Taskliste
 - Desktop-Benachrichtigungen bei abgeschlossenem Task
