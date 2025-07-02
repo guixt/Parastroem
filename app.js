@@ -67,13 +67,16 @@ function FlowProgress({ progress, id }) {
   }, [progress, length]);
 
   const offset = length - length * progress;
+  const gradOffset = progress * 100;
 
   return (
-    <div className="w-full h-6 bg-gray-800 rounded overflow-hidden">
+    <div className="w-full h-6 bg-gray-200 rounded overflow-hidden">
       <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full">
         <defs>
           <linearGradient id={`flow-gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#06b6d4" />
+            <stop offset={`${gradOffset}%`} stopColor="#06b6d4" />
+            <stop offset={`${gradOffset}%`} stopColor="#f97316" />
             <stop offset="100%" stopColor="#f97316" />
           </linearGradient>
           <filter id={`glow-${id}`} x="-50%" y="-50%" width="200%" height="200%">
@@ -93,6 +96,7 @@ function FlowProgress({ progress, id }) {
           strokeLinecap="round"
           strokeDasharray={length}
           strokeDashoffset={offset}
+          className="animate-flow"
           style={{ transition: 'stroke-dashoffset 1s linear' }}
         />
         <circle cx={pos.x} cy={pos.y} r="2" fill={`url(#flow-gradient-${id})`} filter={`url(#glow-${id})`} />

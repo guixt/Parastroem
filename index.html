@@ -8,6 +8,15 @@
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @keyframes flow-move {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+    .animate-flow {
+      animation: flow-move 4s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
   <div id="root"></div>
