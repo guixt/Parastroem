@@ -146,19 +146,22 @@ function TaskItem({ task, onToggle, onDelete }) {
             {task.category && (
               <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200">{task.category}</span>
             )}
-          </h3>
-        </div>
-        <div className="space-x-2">
-          <button onClick={() => onToggle(task.id)} className="text-sm text-teal-600 hover:underline">
-            {task.done ? 'Rückgängig' : 'Erledigt'}
-          </button>
-          <button onClick={() => onDelete(task.id)} className="text-sm text-red-600 hover:underline">Löschen</button>
-        </div>
-      </div>
-      <div className="h-2 bg-gray-200 rounded">
-        <div className={`h-full bg-gradient-to-r ${barGradient}`} style={{ width: `${progress * 100}%`, transition: 'width 1s linear' }}></div>
-      </div>
+      </h3>
     </div>
+    <div className="space-x-2">
+      <button onClick={() => onToggle(task.id)} className="text-sm text-teal-600 hover:underline">
+        {task.done ? 'Rückgängig' : 'Erledigt'}
+      </button>
+      <button onClick={() => onDelete(task.id)} className="text-sm text-red-600 hover:underline">Löschen</button>
+    </div>
+  </div>
+  {task.notes && (
+    <p className="mb-1 text-sm whitespace-pre-wrap text-gray-700">{task.notes}</p>
+  )}
+  <div className="h-2 bg-gray-200 rounded">
+    <div className={`h-full bg-gradient-to-r ${barGradient}`} style={{ width: `${progress * 100}%`, transition: 'width 1s linear' }}></div>
+  </div>
+</div>
   );
 }
 

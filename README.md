@@ -8,6 +8,7 @@ Aktuelle Features:
 - Löschen einzelner Tasks
 - Export und Import der Taskliste
 - Desktop-Benachrichtigungen bei Abschluss eines Tasks
+- Anzeige hinterlegter Notizen zu jedem Task
 
 Starten:
 Einfach `index.html` im Browser öffnen. Es werden React und Tailwind über CDN geladen; ein Build-Schritt ist nicht nötig.
